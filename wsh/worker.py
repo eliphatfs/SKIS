@@ -2,32 +2,64 @@ import subprocess
 import sys
 import time
 import requests
+import queue
+import threading
 from urllib.parse import urljoin
 
 
-if __name__ == "__main__":
+R = queue.Queue()
+url_base = sys.argv[-1]
+stop_web_comm = False
+
+
+def web_comm_recv():
+    while not stop_web_comm:
+        data = requests.get(urljoin(url_base, "stream")).json()
+        for item in data:
+            R.put(item)
+        time.sleep(0.3)
+
+
+def web_comm_send(proc):
+    while not stop_web_comm:
+        for r in proc.stdout:
+            requests.post(urljoin(url_base, "stream"), json={
+                "data": r
+            }).json()
+
+
+def work():
+    global stop_web_comm
     try:
-        url_base = sys.argv[-1]
+        comm = None
         while True:
+            stop_web_comm = True
+            if comm is not None:
+                comm[0].join(); comm[1].join()
+                comm = None
+            stop_web_comm = False
             cmd = requests.get(urljoin(url_base, "get_cmd")).json()
             cmdid, cmdexec = cmd['uuid'], cmd['exec']
             if cmdexec == 'quit':
                 raise KeyboardInterrupt
             try:
                 proc = subprocess.Popen(
-                    cmdexec, shell=True, text=True,
-                    stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+                    cmdexec, shell=True, universal_newlines=True, bufsize=0,
+                    stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
                 )
-                buf = ""
+                comm = (
+                    threading.Thread(target=web_comm_recv, daemon=True),
+                    threading.Thread(target=web_comm_send, daemon=True, args=(proc,))
+                )
+                comm[0].start(); comm[1].start()
                 while proc.poll() is None:
+                    while not R.empty():
+                        inline = R.get()
+                        proc.stdin.write(inline)
+                        proc.stdin.write("\n")
+                        proc.stdin.flush()
+                        print(inline)
                     time.sleep(0.2)
-                    buf += proc.stdout.read(-1)
-                    if buf:
-                        requests.post(urljoin(url_base, "stream"), json={
-                            "uuid": cmdid,
-                            "data": buf
-                        }).json()
-                        buf = ""
                 requests.post(urljoin(url_base, "result"), json={
                     "uuid": cmdid,
                     "result": "exit code %d" % proc.poll()
@@ -42,3 +74,7 @@ if __name__ == "__main__":
     except Exception as exc:
         print("SKIS - WSH worker error.")
         raise
+
+
+if __name__ == "__main__":
+    work()
