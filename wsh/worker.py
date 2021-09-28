@@ -46,9 +46,10 @@ def work():
             if cmdexec == 'quit':
                 raise KeyboardInterrupt
             try:
+                fil = open("tmp.log", "w", 1)
                 proc = subprocess.Popen(
                     cmdexec, shell=True, universal_newlines=True, bufsize=0,
-                    stdin=subprocess.PIPE, stdout=open("tmp.log", "w", 1), stderr=subprocess.STDOUT
+                    stdin=subprocess.PIPE, stdout=fil, stderr=fil
                 )
                 comm = (
                     threading.Thread(target=web_comm_recv, daemon=True),
