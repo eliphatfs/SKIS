@@ -22,7 +22,7 @@ def web_comm_recv():
 
 def web_comm_send(proc):
     while not stop_web_comm:
-        for r in proc.stdout:
+        for r in iter(proc.stdout.readline, ''):
             requests.post(urljoin(url_base, "stream"), json={
                 "data": r
             }).json()
@@ -58,7 +58,6 @@ def work():
                         proc.stdin.write(inline)
                         proc.stdin.write("\n")
                         proc.stdin.flush()
-                        print(inline)
                     time.sleep(0.2)
                 requests.post(urljoin(url_base, "result"), json={
                     "uuid": cmdid,
