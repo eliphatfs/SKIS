@@ -5,6 +5,7 @@ import requests
 import queue
 import threading
 from urllib.parse import urljoin
+import signal
 
 
 R = queue.Queue()
@@ -59,6 +60,9 @@ def work():
                 while proc.poll() is None:
                     while not R.empty():
                         inline = R.get()
+                        if inline == "SIGINT":
+                            proc.send_signal(signal.SIGINT)
+                            continue
                         proc.stdin.write(inline)
                         proc.stdin.write("\n")
                         proc.stdin.flush()
