@@ -21,7 +21,7 @@ def web_comm_recv():
 
 
 def web_comm_send():
-    with open("tmp.log", "r", 0) as r:
+    with open("tmp.log", "r", 1) as r:
         while not stop_web_comm:
             d = r.read()
             if d:
@@ -48,7 +48,7 @@ def work():
             try:
                 proc = subprocess.Popen(
                     cmdexec, shell=True, universal_newlines=True, bufsize=0,
-                    stdin=subprocess.PIPE, stdout=open("tmp.log", "w", 0), stderr=subprocess.STDOUT
+                    stdin=subprocess.PIPE, stdout=open("tmp.log", "w", 1), stderr=subprocess.STDOUT
                 )
                 comm = (
                     threading.Thread(target=web_comm_recv, daemon=True),
