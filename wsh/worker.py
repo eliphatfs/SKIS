@@ -49,6 +49,7 @@ def shell_command(com: str):
         requests.post(urljoin(url_base, "result"), json={
             "result": result
         }).json()
+        return True
     if d[0] == 'quit':
         raise KeyboardInterrupt
     return False
