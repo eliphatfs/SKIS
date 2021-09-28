@@ -20,12 +20,15 @@ def web_comm_recv():
         time.sleep(0.3)
 
 
-def web_comm_send(proc):
-    while not stop_web_comm:
-        for r in iter(proc.stdout.readline, ''):
-            requests.post(urljoin(url_base, "stream"), json={
-                "data": r
-            }).json()
+def web_comm_send():
+    with open("tmp.log", "r", 0) as r:
+        while not stop_web_comm:
+            d = r.read()
+            if d:
+                requests.post(urljoin(url_base, "stream"), json={
+                    "data": d
+                }).json()
+            time.sleep(0.2)
 
 
 def work():
@@ -45,11 +48,11 @@ def work():
             try:
                 proc = subprocess.Popen(
                     cmdexec, shell=True, universal_newlines=True, bufsize=0,
-                    stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+                    stdin=subprocess.PIPE, stdout=open("tmp.log", "w", 0), stderr=subprocess.STDOUT
                 )
                 comm = (
                     threading.Thread(target=web_comm_recv, daemon=True),
-                    threading.Thread(target=web_comm_send, daemon=True, args=(proc,))
+                    threading.Thread(target=web_comm_send, daemon=True)
                 )
                 comm[0].start(); comm[1].start()
                 while proc.poll() is None:
