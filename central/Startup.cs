@@ -11,8 +11,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using SKIS.Central.WebPipe;
 
-namespace central
+namespace SKIS.Central
 {
     public class Startup
     {
@@ -26,7 +27,7 @@ namespace central
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddSingleton<WebPipeService>();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -43,11 +44,14 @@ namespace central
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SKIS Central v1"));
             }
-
-            app.UseStatusCodePages();
+            else
+            {
+                app.UseStatusCodePages();
+            }
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseCors();
+            app.UseWebSockets();
 
             app.UseEndpoints(endpoints =>
             {
