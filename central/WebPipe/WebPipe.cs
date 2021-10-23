@@ -1,4 +1,8 @@
+using System;
 using System.Collections.Concurrent;
+using System.Threading;
+using System.Threading.Channels;
+using System.Threading.Tasks;
 
 namespace SKIS.Central.WebPipe
 {
@@ -7,30 +11,46 @@ namespace SKIS.Central.WebPipe
         public class Participant
         {
             private WebPipe _webPipe;
-            private BlockingCollection<byte[]> _messageBuffer;
+            private Channel<byte[]> _messageBuffer;
             public Participant(WebPipe webPipe)
             {
                 _webPipe = webPipe;
-                _messageBuffer = new(new ConcurrentQueue<byte[]>(), 32);
+                _messageBuffer = Channel.CreateBounded<byte[]>(32);
             }
-            public byte[] PollOrNull(int timeoutMillis)
+            public async Task<byte[]> PollOrNull(int timeoutMillis)
             {
-                if (_messageBuffer.TryTake(out var item, timeoutMillis))
-                    return item;
-                else
-                    return null;
+                return await _messageBuffer.Reader.ReadAsync(
+                    new CancellationTokenSource(timeoutMillis).Token
+                );
             }
-            public void Broadcast()
+            public async Task Broadcast(byte[] data)
             {
-                
+                foreach (var p in _webPipe._participants.Values)
+                {
+                    if (p != this)
+                        await p._messageBuffer.Writer.WriteAsync(data, CancellationToken.None);
+                }
+            }
+
+            public bool Close()
+            {
+                bool result = _webPipe._participants.TryRemove(this, out _);
+                if (_webPipe.ParticipantCount == 0)
+                    _webPipe._service.TryFree(_webPipe);
+                return result;
             }
         }
-        private ConcurrentBag<Participant> _participants = new();
+        private WebPipeService _service;
+        public WebPipe(WebPipeService service) => _service = service;
+        private ConcurrentDictionary<Participant, Participant> _participants = new();
+        public readonly Guid pid = Guid.NewGuid();
         public Participant NewConnection()
         {
             var p = new Participant(this);
-            _participants.Add(p);
+            _participants.TryAdd(p, p);
             return p;
         }
+
+        public int ParticipantCount => _participants.Count;
     }
 }
