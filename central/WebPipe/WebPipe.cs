@@ -19,12 +19,20 @@ namespace SKIS.Central.WebPipe
             }
             public async Task<byte[]> PollOrNull(int timeoutMillis)
             {
-                return await _messageBuffer.Reader.ReadAsync(
-                    new CancellationTokenSource(timeoutMillis).Token
-                );
+                try
+                {
+                    return await _messageBuffer.Reader.ReadAsync(
+                        new CancellationTokenSource(timeoutMillis).Token
+                    );
+                }
+                catch (OperationCanceledException)
+                {
+                    return null;
+                }
             }
             public async Task Broadcast(byte[] data)
             {
+                _webPipe.MessageCount++;
                 foreach (var p in _webPipe._participants.Values)
                 {
                     if (p != this)
@@ -44,10 +52,12 @@ namespace SKIS.Central.WebPipe
         public WebPipe(WebPipeService service) => _service = service;
         private ConcurrentDictionary<Participant, Participant> _participants = new();
         public readonly Guid pid = Guid.NewGuid();
+        public int MessageCount { get; private set; }
         public Participant NewConnection()
         {
             var p = new Participant(this);
-            _participants.TryAdd(p, p);
+            if (!_participants.TryAdd(p, p))
+                throw new Exception("IMPOSSIBLE");
             return p;
         }
 
