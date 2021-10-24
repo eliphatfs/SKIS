@@ -48,7 +48,7 @@ namespace SKIS.Central
             {
                 app.UseStatusCodePages();
             }
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();  // Not needed as reverse proxy is used
             app.UseRouting();
             app.UseCors();
             app.UseWebSockets();
