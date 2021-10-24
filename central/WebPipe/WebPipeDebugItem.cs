@@ -6,5 +6,6 @@ namespace SKIS.Central.WebPipe
     {
         public Guid pid { get; set; }
         public int numParticipants { get; set; }
+        public int numMessages { get; set; }
     }
 }

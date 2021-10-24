@@ -28,7 +28,8 @@ namespace SKIS.Central.WebPipe
         {
             return _webPipeService.WebPipes.Select((x) => new WebPipeDebugItem {
                 pid = x.Key,
-                numParticipants = x.Value.ParticipantCount
+                numParticipants = x.Value.ParticipantCount,
+                numMessages = x.Value.MessageCount,
             });
         }
 
@@ -67,15 +68,27 @@ namespace SKIS.Central.WebPipe
                 var me = pipe.NewConnection();
                 var outbound = _handleWebSocketOutbound(HttpContext, ws, me);
                 var buffer = new byte[1024 * 16];
-                while (true)
+                try
                 {
-                    var result = await ws.ReceiveAsync(new Memory<byte>(buffer), CancellationToken.None);
-                    if (result.MessageType == WebSocketMessageType.Close) break;
-                    await _handleWebSocketInbound(buffer, result, me);
+                    while (true)
+                    {
+                        var result = await ws.ReceiveAsync(new Memory<byte>(buffer), CancellationToken.None);
+                        if (result.MessageType == WebSocketMessageType.Close) break;
+                        await _handleWebSocketInbound(new Memory<byte>(buffer, 0, result.Count), result, me);
+                    }
+                    _closed = true;  // ATOM BY C#
+                    await outbound;
+                    await ws.CloseAsync(ws.CloseStatus ?? WebSocketCloseStatus.NormalClosure, ws.CloseStatusDescription, CancellationToken.None);
                 }
-                _closed = true;  // ATOM BY C#
-                await outbound;
-                await ws.CloseAsync(ws.CloseStatus ?? WebSocketCloseStatus.NormalClosure, ws.CloseStatusDescription, CancellationToken.None);
+                catch (WebSocketException wse)
+                {
+                    if (wse.WebSocketErrorCode != WebSocketError.ConnectionClosedPrematurely)
+                        _logger.LogWarning(wse, "Unexepected web pipe exception.");
+                }
+                finally
+                {
+                    me.Close();
+                }
             }
             else
             {
