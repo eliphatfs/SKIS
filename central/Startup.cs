@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using SKIS.Central.WebPipe;
+using SKIS.Central.ASPNetAddons;
 
 namespace SKIS.Central
 {
@@ -27,7 +27,8 @@ namespace SKIS.Central
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<WebPipeService>();
+            services.AddSingleton<WebPipe.WebPipeService>();
+            services.AddSingleton<PasteBin.PasteBinService>();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -49,6 +50,7 @@ namespace SKIS.Central
                 app.UseStatusCodePages();
             }
             // app.UseHttpsRedirection();  // Not needed as reverse proxy is used
+            app.UseHttpException();
             app.UseRouting();
             app.UseCors();
             app.UseWebSockets();
