@@ -14,7 +14,7 @@ page('/pastebin', () => {
             "contents": $("#input-contents").val()
         },
             (data: { key: string }) => {
-                location.href = "./v.html?k=" + encodeURIComponent(data.key);
+                location.href = "/pastebin/" + encodeURIComponent(data.key);
             },
             "json"
         ).always(() => {
