@@ -1,5 +1,5 @@
 import $ from 'jquery';
-const LOCAL_DEBUG = true;
+const LOCAL_DEBUG = false;
 
 const world = {
     host: LOCAL_DEBUG ? "http://localhost:5000" : "https://central.skis.flandre.info",
