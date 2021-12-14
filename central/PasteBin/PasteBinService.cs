@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using System.Net;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
@@ -24,7 +25,7 @@ namespace SKIS.Central.PasteBin
         public (string, PasteBin) Paste(string name, string contents)
         {
             if (contents.Length > MAX_CONTENT_SIZE)
-                throw new HttpException(HttpStatusCode.RequestEntityTooLarge);
+                throw new HttpException(HttpStatusCode.RequestEntityTooLarge, "Content of paste must not exceed 100K");
             var bin = new PasteBin { name = name, contents = contents };
             while (outpopQueue.Count >= MAX_PASTEBINS)
             {
@@ -32,9 +33,20 @@ namespace SKIS.Central.PasteBin
                     if (!pasteBins.TryRemove(result, out _))
                         throw new Exception("BUG: Pastebin not found when deque");
             }
+            var sanName = new StringBuilder();
+            for (var i = 0; i < name.Length; i++)
+            {
+                if (char.IsLetterOrDigit(name[i]))
+                    sanName.Append(name[i]);
+                else if (sanName[^1] != '-')
+                    sanName.Append('-');
+            }
+            if (sanName[^1] != '-')
+                sanName.Append('-');
+            name = sanName.ToString().ToLowerInvariant();
             for (long i = 1; ; i++)
             {
-                string key = (name + "-" + i).ToLowerInvariant();
+                string key = name + i;
                 if (pasteBins.TryAdd(key, bin))
                 {
                     outpopQueue.Enqueue(key);
