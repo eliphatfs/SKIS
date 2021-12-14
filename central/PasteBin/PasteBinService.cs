@@ -16,12 +16,12 @@ namespace SKIS.Central.PasteBin
         }
         public IReadOnlyDictionary<string, PasteBin> PasteBins => pasteBins;
         protected ConcurrentDictionary<string, PasteBin> pasteBins = new();
-        public ConcurrentQueue<string> outpopQueue = new();
+        protected ConcurrentQueue<string> outpopQueue = new();
 
         public const int MAX_CONTENT_SIZE = 100000;
         public const int MAX_PASTEBINS = 100;
 
-        public PasteBin Paste(string name, string contents)
+        public (string, PasteBin) Paste(string name, string contents)
         {
             if (contents.Length > MAX_CONTENT_SIZE)
                 throw new HttpException(HttpStatusCode.RequestEntityTooLarge);
@@ -39,7 +39,7 @@ namespace SKIS.Central.PasteBin
                 {
                     outpopQueue.Enqueue(key);
                     _logger.LogInformation("Created paste bin {key}.", key);
-                    return bin;
+                    return (key, bin);
                 }
             }
         }

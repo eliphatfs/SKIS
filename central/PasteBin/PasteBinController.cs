@@ -8,11 +8,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using SKIS.Central.ASPNetAddons;
 
 namespace SKIS.Central.PasteBin
 {
     [ApiController]
-    public class PasteBinController
+    public class PasteBinController : ControllerBase
     {
         private readonly ILogger<PasteBinController> _logger;
         private readonly PasteBinService _pasteBinService;
@@ -20,6 +21,19 @@ namespace SKIS.Central.PasteBin
         {
             _logger = logger;
             _pasteBinService = pasteBinService;
+        }
+        [HttpGet("/pastebin/{key}")]
+        public PasteBin Fetch(string key)
+        {
+            if (_pasteBinService.PasteBins.TryGetValue(key, out var pasteBin))
+                return pasteBin;
+            else
+                throw new HttpException(HttpStatusCode.BadRequest);
+        }
+        [HttpPost("/pastebin")]
+        public object Paste(string name, string contents)
+        {
+            return new { key = _pasteBinService.Paste(name, contents).Item1 };
         }
     }
 }
