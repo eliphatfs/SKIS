@@ -28,11 +28,13 @@ namespace SKIS.Central.PasteBin
             if (_pasteBinService.PasteBins.TryGetValue(key.ToLowerInvariant(), out var pasteBin))
                 return pasteBin;
             else
-                throw new HttpException(HttpStatusCode.BadRequest);
+                throw new HttpException(HttpStatusCode.BadRequest, "Paste bin key does not exist");
         }
         [HttpPost("/pastebin")]
-        public object Paste(string name, string contents)
+        public object Paste([FromForm] string name, [FromForm] string contents)
         {
+            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrEmpty(contents))
+                throw new HttpException(HttpStatusCode.BadRequest, "Name or contents empty or not found");
             return new { key = _pasteBinService.Paste(name, contents).Item1 };
         }
     }

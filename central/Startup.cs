@@ -30,6 +30,15 @@ namespace SKIS.Central
             services.AddSingleton<WebPipe.WebPipeService>();
             services.AddSingleton<PasteBin.PasteBinService>();
             services.AddControllers();
+            services.AddCors(opt =>
+            {
+                opt.AddDefaultPolicy(builder =>
+                    builder
+                    .AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                );
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SKIS: Central", Version = "v1" });
