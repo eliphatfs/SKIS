@@ -1,26 +1,28 @@
 {
-  "name": "tailwindcss-parcel-starter",
-  "version": "1.0.0",
-  "description": "A simple tailwind starter project with parcel",
+  "name": "skis-website",
+  "version": "0.0.0",
   "scripts": {
-    "dev": "yarn parcel src/index.html --open",
-    "prod": "yarn parcel build src/index.html"
-  },
-  "repository": "https://github.com/SantiMA10/tailwindcss-parcel-starter.git",
-  "author": "Santi <santiagomartinagra@gmail.com>",
-  "license": "MIT",
-  "engines": {
-    "node": ">=12"
+    "dev": "vite serve src",
+    "build": "tsc && vite build src",
+    "preview": "vite preview src"
   },
   "devDependencies": {
-    "autoprefixer": "^10.2.5",
-    "postcss": "^8.2.8",
-    "postcss-cli": "^8.3.1",
-    "typescript": "^4.2.3"
+    "typescript": "^4.4.4",
+    "vite": "^2.7.2"
   },
   "dependencies": {
     "@tailwindcss/forms": "^0.4.0",
-    "parcel": "^2.0.0-nightly.489",
+    "@types/jquery": "^3.5.10",
+    "@types/markdown-it": "^12.2.3",
+    "autoprefixer": "^10.4.0",
+    "github-markdown-css": "^5.1.0",
+    "highlight.js": "^11.3.1",
+    "katex": "^0.15.1",
+    "markdown-it-texmath": "^0.9.6",
+    "page": "^1.11.6",
+    "postcss": "^8.4.5",
+    "postcss-import": "^14.0.2",
+    "shx": "^0.3.3",
     "tailwindcss": "^3.0.2"
   }
 }

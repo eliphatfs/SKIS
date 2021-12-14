@@ -22,16 +22,16 @@
             <form>
                 <label class="mt-3 block">
                     <span class="text-gray-400">Name</span>
-                    <input class="form-inputs" type="text" />
+                    <input class="form-inputs" type="text" id="input-name" />
                 </label>
                 <label class="mt-3 block">
                     <span class="text-gray-400">Contents</span>
-                    <textarea class="form-inputs" rows="10"></textarea>
+                    <textarea class="form-inputs" rows="10" id="input-contents"></textarea>
                 </label>
             </form>
           </div>
           <div class="pt-8 leading-7 text-sm grid-cols-12">
-            <a href="javascript:alert('test')" class="btn-purple-filled">
+            <a id="btn-submit" href="#" class="btn-purple-filled">
               Submit
             </a>
             <a href="../index.html" class="ml-3 btn-purple-outlined">
@@ -41,5 +41,6 @@
         </div>
       </div>
     </div>
+    <script type="module" src="./index.html.ts"></script>
   </body>
 </html>
