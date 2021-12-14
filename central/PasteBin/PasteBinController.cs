@@ -25,7 +25,7 @@ namespace SKIS.Central.PasteBin
         [HttpGet("/pastebin/{key}")]
         public PasteBin Fetch(string key)
         {
-            if (_pasteBinService.PasteBins.TryGetValue(key, out var pasteBin))
+            if (_pasteBinService.PasteBins.TryGetValue(key.ToLowerInvariant(), out var pasteBin))
                 return pasteBin;
             else
                 throw new HttpException(HttpStatusCode.BadRequest);

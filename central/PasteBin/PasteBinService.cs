@@ -34,7 +34,7 @@ namespace SKIS.Central.PasteBin
             }
             for (long i = 1; ; i++)
             {
-                string key = name + "-" + i;
+                string key = (name + "-" + i).ToLowerInvariant();
                 if (pasteBins.TryAdd(key, bin))
                 {
                     outpopQueue.Enqueue(key);
