@@ -21,7 +21,7 @@ class Pump(asyncio.DatagramProtocol):
         Q.put_nowait(message)
 
     def error_received(self, exc):
-        print(exc)
+        print("Managed Exception - ", exc)
 
     def pipe_data(self, data):
         if self.target[-1] is None:
