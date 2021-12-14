@@ -1,0 +1,33 @@
+<div class="min-h-screen bg-gray-50 py-6 flex flex-col justify-center relative overflow-hidden sm:py-12">
+  <img src="/assets/img/rainbow.webp"
+    class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-w-none w-full h-full" />
+  <div
+    class="relative px-8 py-12 bg-white shadow-xl ring-1 ring-gray-900/5 md:max-w-3xl md:mx-auto md:rounded-lg md:px-16">
+    <div class="max-w-full w-screen mx-auto">
+      <div class="leading-7 text-gray-600">
+        <h2 class="text-2xl">Paste your contents and share with others.</h2>
+        <p class="mt-2 text-gray-400 text-base italic">Markdown supported with code syntax highlighting and TeX.</p>
+      </div>
+      <div class="pt-5 text-sm leading-7 text-gray-600">
+        <form>
+          <label class="mt-3 block">
+            <span class="text-gray-400">Name</span>
+            <input class="form-inputs" type="text" id="input-name" />
+          </label>
+          <label class="mt-3 block">
+            <span class="text-gray-400">Contents</span>
+            <textarea class="form-inputs" rows="10" id="input-contents"></textarea>
+          </label>
+        </form>
+      </div>
+      <div class="pt-8 leading-7 text-sm grid-cols-12">
+        <a id="btn-submit" href="#" class="btn-purple-filled">
+          Submit
+        </a>
+        <a href="/" class="ml-3 btn-purple-outlined">
+          Home
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
