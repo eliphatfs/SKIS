@@ -12,6 +12,6 @@
         @apply rounded-lg text-purple-500 border-2 border-purple-500 transition-colors px-5 py-2 hover:bg-purple-600 hover:border-purple-600 hover:text-purple-50 focus:bg-purple-700 focus:border-purple-700;
     }
     .form-inputs {
-        @apply block rounded w-full border-gray-200 focus:ring focus:border-purple-400 focus:ring-purple-300 focus:ring-opacity-50;
+        @apply block rounded w-full border-gray-300 focus:ring focus:border-purple-500 focus:ring-purple-300 focus:ring-opacity-50;
     }
 }
