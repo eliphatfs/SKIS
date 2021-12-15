@@ -24,6 +24,8 @@ namespace SKIS.Central.PasteBin
 
         public (string, PasteBin) Paste(string name, string contents)
         {
+            if (name.Length > 256)
+                throw new HttpException(HttpStatusCode.RequestUriTooLong, "Name key too long! (> 256 chars)");
             if (contents.Length > MAX_CONTENT_SIZE)
                 throw new HttpException(HttpStatusCode.RequestEntityTooLarge, "Content of paste must not exceed 100K");
             var bin = new PasteBin { name = name, contents = contents };
