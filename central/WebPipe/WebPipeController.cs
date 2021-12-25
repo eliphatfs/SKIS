@@ -23,14 +23,11 @@ namespace SKIS.Central.WebPipe
             _logger = logger;
             _webPipeService = webPipeService;
         }
-        [HttpGet("/webpipe/debug/info")]
-        public IEnumerable<WebPipeDebugItem> DebugInfo()
+
+        [HttpGet("/webpipe/query")]
+        public IEnumerable<WebPipeQueryResult> ListWebPipes()
         {
-            return _webPipeService.WebPipes.Select((x) => new WebPipeDebugItem {
-                pid = x.Key,
-                numParticipants = x.Value.ParticipantCount,
-                numMessages = x.Value.MessageCount,
-            });
+            yield break;
         }
 
         [HttpGet("/webpipe/allocate")]
@@ -87,6 +84,7 @@ namespace SKIS.Central.WebPipe
                 }
                 finally
                 {
+                    _closed = true;
                     me.Close();
                 }
             }

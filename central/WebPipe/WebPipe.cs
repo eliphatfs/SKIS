@@ -52,6 +52,8 @@ namespace SKIS.Central.WebPipe
         public WebPipe(WebPipeService service) => _service = service;
         private ConcurrentDictionary<Participant, Participant> _participants = new();
         public readonly Guid pid = Guid.NewGuid();
+        public WebPipeCapabilities capabilities = new();
+        public string name = "(Anonymous)";
         public int MessageCount { get; private set; }
         public Participant NewConnection()
         {
