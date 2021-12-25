@@ -2,11 +2,9 @@ import page from 'page';
 import body from './index.html?raw';
 import $ from 'jquery';
 import '../../../common';
-import setBackgroundImage from '../../../shared/bg';
 
 page('/pastebin', () => {
     document.body.innerHTML = body;
-    setBackgroundImage();
 
     $("#btn-submit").on("click", () => {
         $("#btn-submit").attr("disabled", "disabled");

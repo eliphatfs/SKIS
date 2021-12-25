@@ -1,6 +1,6 @@
 import page from 'page';
 import './common';
-import './assets/css/styles.css';
+import './css/styles.css';
 import 'katex/dist/katex.min.css';
 import 'highlight.js/styles/github.css';
 import 'github-markdown-css/github-markdown.css';

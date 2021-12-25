@@ -5,7 +5,6 @@ import '../../../common';
 import MarkdownIt from 'markdown-it';
 import MarkdownItMath from 'markdown-it-texmath';
 import highlighter from 'highlight.js';
-import setBackgroundImage from '../../../shared/bg';
 
 interface PasteBin {
     name: string
@@ -14,7 +13,6 @@ interface PasteBin {
 
 page('/pastebin/:key', (ctx) => {
     document.body.innerHTML = body;
-    setBackgroundImage();
     
     const key = ctx.params.key;
     const mdRenderer = new MarkdownIt({
