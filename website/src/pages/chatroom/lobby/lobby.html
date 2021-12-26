@@ -39,5 +39,25 @@
         </div>
       </div>
     </div>
-  </div>
-  
+</div>
+<div class="fixed hidden inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="create-modal">
+    <div class="relative top-1/4 mx-auto p-8 border w-96 shadow-lg rounded-md bg-white">
+        <div>
+            <h3 class="leading-7 text-gray-600">Create a new chat...</h3>
+            <form>
+                <label class="mt-3 block">
+                  <span class="text-gray-400 text-sm">Name</span>
+                  <input class="form-inputs text-sm" type="text" id="input-name" />
+                </label>
+            </form>
+        </div>
+        <div class="pt-8 leading-7 text-sm grid-cols-12">
+          <a id="btn-submit" href="#" class="btn-purple-filled">
+            Submit
+          </a>
+          <a id="btn-close-modal" href="#" class="ml-3 btn-purple-outlined">
+            Cancel
+          </a>
+        </div>
+    </div>
+</div>
