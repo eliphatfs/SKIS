@@ -47,11 +47,11 @@ namespace SKIS.Central.WebPipe
         [HttpPost("/webpipe/allocate")]
         public WebPipeAllocationResult AllocatePost([FromForm] string name = null, [FromForm] int capabilities = 0)
         {
-            var pipe = _webPipeService.Allocate();
             if (capabilities < 0 || capabilities >= (int)WebPipeCapabilities.Overflow)
                 throw new HttpException(HttpStatusCode.BadRequest, "Capabilities out of range: " + capabilities);
             if (name != null && name.Length >= 64)
                 throw new HttpException(HttpStatusCode.BadRequest, "Name too long");
+            var pipe = _webPipeService.Allocate();
             TimeoutWebPipeInitialization(_logger, _webPipeService, pipe.pid);
             pipe.capabilities = (WebPipeCapabilities)capabilities;
             if (name != null)
