@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using SKIS.Central.ASPNetAddons;
 
 namespace SKIS.Central.WebPipe
 {
@@ -25,13 +26,46 @@ namespace SKIS.Central.WebPipe
         }
 
         [HttpGet("/webpipe/query")]
-        public IEnumerable<WebPipeQueryResult> ListWebPipes()
+        public IEnumerable<WebPipeQueryResult> QueryWebPipes([FromQuery] int requireCap = 0)
         {
-            yield break;
+            var cap = (WebPipeCapabilities)requireCap;
+            foreach (var pipekv in _webPipeService.WebPipes)
+            {
+                if (pipekv.Value.capabilities.HasFlag(cap))
+                    yield return new WebPipeQueryResult
+                    {
+                        capabilities = pipekv.Value.capabilities,
+                        key = pipekv.Key,
+                        pid = pipekv.Value.pid,
+                        name = pipekv.Value.name,
+                        numMessages = pipekv.Value.MessageCount,
+                        numParticipants = pipekv.Value.ParticipantCount
+                    };
+            }
+        }
+
+        [HttpPost("/webpipe/allocate")]
+        public WebPipeAllocationResult AllocatePost([FromForm] string name = null, [FromForm] int capabilities = 0)
+        {
+            var pipe = _webPipeService.Allocate();
+            if (capabilities < 0 || capabilities >= (int)WebPipeCapabilities.Overflow)
+                throw new HttpException(HttpStatusCode.BadRequest, "Capabilities out of range: " + capabilities);
+            if (name != null && name.Length >= 64)
+                throw new HttpException(HttpStatusCode.BadRequest, "Name too long");
+            TimeoutWebPipeInitialization(_logger, _webPipeService, pipe.pid);
+            pipe.capabilities = (WebPipeCapabilities)capabilities;
+            if (name != null)
+                pipe.name = name;
+            return new WebPipeAllocationResult
+            {
+                pid = pipe.pid,
+                success = true,
+                error = null
+            };
         }
 
         [HttpGet("/webpipe/allocate")]
-        public WebPipeAllocationResult Allocate()
+        public WebPipeAllocationResult AllocateGet()
         {
             var pipe = _webPipeService.Allocate();
             TimeoutWebPipeInitialization(_logger, _webPipeService, pipe.pid);

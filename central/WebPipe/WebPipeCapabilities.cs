@@ -2,9 +2,12 @@ using System;
 
 namespace SKIS.Central.WebPipe
 {
-    public class WebPipeCapabilities
+    [Flags]
+    public enum WebPipeCapabilities
     {
-        public bool chatRoom { get; set; }
-        public bool xTerm { get; set; }
+        None = 0,
+        ChatRoom = 1,
+        XTerm = 2,
+        Overflow = 4,
     }
 }
