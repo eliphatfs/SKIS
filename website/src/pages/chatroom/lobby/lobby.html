@@ -1,0 +1,43 @@
+<div class="min-h-screen bg-gray-50 py-6 flex flex-col justify-center relative overflow-hidden sm:py-12">
+    <img id="bg-img" src="/img/rainbow.webp"
+      class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-w-none w-full h-full" />
+    <div
+      class="relative px-8 py-12 bg-white shadow-xl ring-1 ring-gray-900/5 md:max-w-3xl md:mx-auto md:rounded-lg md:px-16">
+      <div class="max-w-full w-screen mx-auto">
+        <div class="leading-7 text-gray-600">
+          <h2 class="text-2xl">Chat Lobby (SIMD: Simple IM w/ MarkDown)</h2>
+          <p class="mt-2 text-gray-400 text-base italic">
+              This exists for testing SKIS data pipes only.
+              There is no warranty for privacy or integrity of data sent.
+              Don't use it for anything serious.
+          </p>
+        </div>
+        <div class="pt-5 leading-7 text-gray-600 grid grid-cols-1">
+            <div>
+                <h3 class="text-lg font-bold mb-2 text-gray-500">Pick a chat room:</h3>
+                <div class="bg-white rounded-lg border-gray-200 border-2">
+                    <ul class="divide-y-2 divide-gray-100" id="chat-room-list">
+                        <li class="p-3" id="loading-container">
+                            Loading...
+                            <svg class="inline animate-spin h-4 w-4 text-black" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                        </li>
+                        <li class="p-3 italic hover:bg-gray-100" id="create-btn">(Create a new one)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="pt-8 leading-7 text-sm grid-cols-12">
+          <a href="/" class="btn-purple-outlined">
+            Home
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  
