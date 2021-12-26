@@ -54,7 +54,7 @@ namespace SKIS.Central.WebPipe
             var pipe = _webPipeService.Allocate();
             TimeoutWebPipeInitialization(_logger, _webPipeService, pipe.pid);
             pipe.capabilities = (WebPipeCapabilities)capabilities;
-            if (name != null)
+            if (!string.IsNullOrWhiteSpace(name))
                 pipe.name = name;
             return new WebPipeAllocationResult
             {
