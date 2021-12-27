@@ -3,6 +3,8 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
+using SKIS.Central.ASPNetAddons;
 
 namespace SKIS.Central.WebPipe
 {
@@ -11,17 +13,24 @@ namespace SKIS.Central.WebPipe
         public class Participant
         {
             private WebPipe _webPipe;
-            private Channel<byte[]> _messageBuffer;
+            private BufferBlock<byte[]> _messageBuffer;
             public Participant(WebPipe webPipe)
             {
                 _webPipe = webPipe;
-                _messageBuffer = Channel.CreateBounded<byte[]>(32);
+                _messageBuffer = new(new DataflowBlockOptions
+                {
+                    BoundedCapacity = 32
+                });
             }
             public async Task<byte[]> PollOrNull(int timeoutMillis)
             {
+                if (_messageBuffer.TryReceiveAll(out var msgs))
+                {
+                    return MiscHelpers.Combine(msgs);
+                }
                 try
                 {
-                    return await _messageBuffer.Reader.ReadAsync(
+                    return await _messageBuffer.ReceiveAsync(
                         new CancellationTokenSource(timeoutMillis).Token
                     );
                 }
@@ -36,7 +45,8 @@ namespace SKIS.Central.WebPipe
                 foreach (var p in _webPipe._participants.Values)
                 {
                     if (p != this)
-                        await p._messageBuffer.Writer.WriteAsync(data, CancellationToken.None);
+                        if (!await p._messageBuffer.SendAsync(data, CancellationToken.None))
+                            throw new Exception("BUG");
                 }
             }
 
