@@ -43,6 +43,11 @@ page('/chatroom/lobby', () => {
         return false;
     })
 
+    $("#new-chat-form").on("submit", () => {
+        $("#btn-submit").trigger("click");
+        return false;
+    });
+
     $.getJSON(
         "/webpipe/query",
         (data: Room[]) => {
