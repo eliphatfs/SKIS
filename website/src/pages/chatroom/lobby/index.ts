@@ -49,7 +49,7 @@ page('/chatroom/lobby', () => {
     });
 
     $.getJSON(
-        "/webpipe/query",
+        "/webpipe/query?requireCap=" + CAP_CHATROOM,
         (data: Room[]) => {
             let views: HTMLLIElement[] = [];
             for (let room of data) {
