@@ -9,10 +9,12 @@ import os
 import sys
 import json
 import random
+import logging
 import platform
 import subprocess
 from Cryptodome.Cipher import AES
-from Cryptodome.Protocol.KDF import bcrypt
+from Cryptodome.Protocol.KDF import PBKDF2
+from Cryptodome.Hash import SHA512
 
 
 def local_path_of(file):
@@ -95,13 +97,16 @@ def prepare_ttyd():
 
 
 def protocol_decode(data, pswd):
-    nonce, tag, ciphertext = data[:16], data[16: 32], data[32:]
+    nonce, ciphertext, tag = data[:16], data[16: -16], data[-16:]
     cipher = AES.new(pswd, AES.MODE_EAX, nonce=nonce)
     try:
         return cipher.decrypt_and_verify(ciphertext, tag)
     except ValueError as exc:
         print("Got", exc)
-        print("Corrupt data or unauthorized transmission. Discarding packet.")
+        print(
+            "Corrupt data or unauthorized transmission (possibly wrong password)."
+            "Discarding packet."
+        )
         return None
 
 
@@ -109,13 +114,13 @@ def protocol_encode(data, pswd):
     cipher = AES.new(pswd, AES.MODE_EAX)
     nonce = cipher.nonce
     ciphertext, tag = cipher.encrypt_and_digest(data)
-    return nonce + tag + ciphertext
+    return nonce + ciphertext + tag
 
 
 async def ttyd2skis(ttyd_pipe, skis_pipe, pswd):
     while ttyd_pipe.close_code is None and skis_pipe.close_code is None:
         data = await ttyd_pipe.recv()
-        if data[0] == b'0':
+        if data[0] == b'0'[0]:
             data = data[1:]
             n = 15 * 1024
             chunks = [data[i: i+n] for i in range(0, len(data), n)]
@@ -123,12 +128,14 @@ async def ttyd2skis(ttyd_pipe, skis_pipe, pswd):
                 await skis_pipe.send(protocol_encode(chunk, pswd))
 
 
-async def skis2ttyd(ttyd_pipe, skis_pipe, pswd):
+async def skis2ttyd(ttyd_pipe, skis_pipe, pswd, first_msg=False):
     while ttyd_pipe.close_code is None and skis_pipe.close_code is None:
         data = await skis_pipe.recv()
         cmd = protocol_decode(data, pswd)
         if cmd is None:
             continue
+        if first_msg:
+            return cmd
         await ttyd_pipe.send(cmd)
 
 
@@ -146,13 +153,17 @@ async def main(arg_ns: argparse.Namespace):
     if not alloc['success']:
         raise Exception(alloc['error'])
     print("Allocated:", arg_ns.name, alloc['pid'])
-    pswd = bcrypt(os.getenv("TTTY_PASS"), 12, alloc['pid'][:16].encode("ascii"))
-    ttyd_proc = subprocess.Popen([ttyd, '-p', '35781', arg_ns.spawn])
-    await asyncio.sleep(1.0)
+    pswd = PBKDF2(
+        os.getenv("TTTY_PASS"), alloc['pid'][:16].encode("ascii"),
+        24, 1000, hmac_hash_module=SHA512
+    )
+    ttyd_proc = subprocess.Popen([ttyd, '-p', '35781', '-d', '32767', arg_ns.spawn])
     futures = []
     try:
         async with websockets.connect(ws_fmt % alloc['pid']) as skis_pipe:
-            async with websockets.connect('ws://127.0.0.1:35781/ws') as ttyd_pipe:
+            first_msg = await skis2ttyd(skis_pipe, skis_pipe, pswd, True)
+            async with websockets.connect('ws://127.0.0.1:35781/ws', subprotocols=['tty']) as ttyd_pipe:
+                await ttyd_pipe.send(first_msg)
                 futures.append(asyncio.ensure_future(ttyd2skis(ttyd_pipe, skis_pipe, pswd)))
                 futures.append(asyncio.ensure_future(skis2ttyd(ttyd_pipe, skis_pipe, pswd)))
                 while skis_pipe.close_code is None and ttyd_pipe.close_code is None:

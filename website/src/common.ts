@@ -1,8 +1,8 @@
 import $ from 'jquery';
-const LOCAL_DEBUG = false;
+const LOCAL_DEBUG = true;
 
 const world = {
-    host: LOCAL_DEBUG ? "http://localhost:5000" : "https://central.skis.flandre.info",
+    host: LOCAL_DEBUG ? "http://127.0.0.1:5000" : "https://central.skis.flandre.info",
 };
 
 $.ajaxSetup({

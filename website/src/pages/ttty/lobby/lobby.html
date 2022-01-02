@@ -4,11 +4,28 @@
     <div
       class="relative px-8 py-12 bg-white shadow-xl ring-1 ring-gray-900/5 md:max-w-3xl md:mx-auto md:rounded-lg md:px-16">
       <div class="max-w-full w-screen mx-auto">
-        <div class="leading-7 text-gray-600">
+        <div class="leading-7 text-gray-600 markdown-body">
           <h2 class="text-2xl">ttty (t<span class="text-gray-400">ele-</span>t<span class="text-gray-400">erminal-</span>ty<span class="text-gray-400">pewriter</span>)</h2>
           <p class="mt-2 text-gray-400 text-base italic">
               Remotely visit your terminal.
+              This may be useful for e.g. remote debugging from a CI worker,
+              or when you want to share resources with your cooperator.
           </p>
+          <p class="mt-5 text-gray-600 text-base text-justify">
+              To begin with this service:
+          </p>
+          <ol class="list-decimal mt-3 text-gray-600 text-base text-justify">
+              <li>Install <code>websockets</code>, <code>pycryptodomex</code> and <code>tqdm</code> for your python.</li>
+              <li>If you are hosting a terminal from MacOS or non-x64 devices,
+                  install <a style="text-decoration: underline; color: inherit" class="italic" href="https://github.com/tsl0922/ttyd">ttyd</a>
+                  (<code>brew install ttyd</code> for MacOS).
+              </li>
+              <li>Run <a style="text-decoration: underline; color: inherit" class="italic" href="#">client/ttty.py</a> on your target device.
+                  (add <code>--help</code> for usage)</li>
+              <li>Connect into the device here.</li>
+              <li>All data transferred over SKIS will be encrypted with a hash of your provided password.
+                  Do not use a weak password!</li>
+          </ol>
         </div>
         <div class="pt-5 leading-7 text-gray-600 grid grid-cols-1">
             <div>
