@@ -78,7 +78,8 @@ def prepare_ttyd():
             uri = "https://skis.flandre.info/d/ttyd/linux-x64/ttyd"
         print("Fetching ttyd from SKIS...")
         if uri is not None:
-            download_url(uri, local_path_of(local_path_of("ttyd.exe")))
+            download_url(uri, local_path_of("ttyd.exe"))
+            os.chmod(local_path_of("ttyd.exe"), 0o777)
             return prepare_ttyd()
     print(
         "Cannot resolve ttyd.",
