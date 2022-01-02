@@ -1,0 +1,30 @@
+<img id="bg-img" src="/img/rainbow.webp"
+    class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-w-none w-full h-full" />
+<div class="term-outer fixed shadow-xl ring-1 ring-gray-900/5 top-6 bottom-6 left-0 right-0 p-3 pr-2 md:left-16 md:right-16 md:rounded-lg" style="background-color: #0c0c0c;">
+    <div class="term-outer relative h-full w-full left-0 right-0 bottom-0 top-0">
+        <div id="term-container" class="term-outer absolute left-0 right-2 bottom-0 top-0">
+    
+        </div>
+        <div id="term-scroll" class="absolute right-0 w-1 bottom-0 top-0">
+            <button type="button" id="term-scroll-head" class="absolute transition-colors right-0 w-1 h-8 rounded-full bg-gray-500 hover:bg-gray-400 after:absolute after:-left-1 after:-right-3 after:-top-2 after:-bottom-2">
+
+            </button>
+        </div>
+    </div>
+</div>
+<style>
+.xterm-viewport.xterm-viewport {
+    scrollbar-width: none;
+}
+.xterm-viewport::-webkit-scrollbar {
+    width: 0px;
+}
+.xterm-viewport::-webkit-scrollbar-track {
+    opacity: 0;
+}
+.xterm-viewport::-webkit-scrollbar-thumb {
+    min-height: 20px;
+    opacity: 0;
+    background-color: transparent;
+}
+</style>

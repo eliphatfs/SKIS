@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "target": "ESNext",
+    "allowSyntheticDefaultImports": true,
     "useDefineForClassFields": true,
     "module": "ESNext",
     "lib": ["ESNext", "DOM"],

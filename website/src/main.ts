@@ -9,6 +9,8 @@ import 'markdown-it-texmath/css/texmath.css';
 import './pages/index';
 import './pages/chatroom/lobby';
 import './pages/chatroom/simd';
+import './pages/ttty';
+import './pages/ttty/lobby';
 import './pages/pastebin/index';
 import './pages/pastebin/viewer';
 import './pages/404';
