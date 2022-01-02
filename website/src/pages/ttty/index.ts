@@ -157,7 +157,6 @@ page('/ttty/i/:pid', (ctx) => {
     term.write("Enter password: ");
     let pswdbuf = "";
     let pswdhash: CryptoJS.lib.WordArray;
-    let recv_queue: Promise<ArrayBuffer>[] = [];
     let disposableInitPassword = term.onData((x) => {
       if (x == '\r') {
         disposableInitPassword.dispose();
@@ -177,6 +176,7 @@ page('/ttty/i/:pid', (ctx) => {
           const msg = JSON.stringify({ columns: size.cols, rows: size.rows });
           protocolSend(ws, new TextEncoder().encode(Command.RESIZE_TERMINAL + msg), pswdhash);
         });
+        ws.binaryType = 'arraybuffer';
         ws.onopen = () => {
           protocolSend(ws, new TextEncoder().encode(
             JSON.stringify({
@@ -186,20 +186,11 @@ page('/ttty/i/:pid', (ctx) => {
             })), pswdhash);
         };
         ws.onmessage = (x) => {
-          recv_queue.push(x.data.arrayBuffer());
+          protocolReceive(term, new Uint8Array(x.data as ArrayBuffer), pswdhash);
         };
         ws.onclose = () => {
           alert("You have disconnected. You can refresh to reconnect if the ttty is still online.");
         };
-        async function handleQueue() {
-          let wait = 25;
-          while (recv_queue.length > 0) {
-            protocolReceive(term, new Uint8Array(await recv_queue.shift()!), pswdhash);
-            wait = 1;
-          }
-          return setTimeout(handleQueue, wait);
-        }
-        handleQueue();
       }
       else {
         pswdbuf += x;
