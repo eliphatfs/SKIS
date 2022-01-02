@@ -72,7 +72,7 @@ async def main(arg_ns: argparse.Namespace):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Client for connecting SKIS web pipe to local udp port.")
-    parser.add_argument("--server", type=str, default="localhost:5000/webpipe/", help="SKIS web pipe base address.")
+    parser.add_argument("--server", type=str, default="central.skis.flandre.info/webpipe/", help="SKIS web pipe base address.")
     parser.add_argument("--id", type=str, default=None, help="Web pipe UUID. Ignored if --alloc is set.")
     parser.add_argument("--alloc", action="store_true", help="Whether to allocate new web pipe.")
     parser.add_argument("--insecure", action="store_true", help="Do not use https/wss.")
