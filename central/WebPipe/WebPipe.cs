@@ -24,10 +24,10 @@ namespace SKIS.Central.WebPipe
             }
             public async Task<byte[]> PollOrNull(int timeoutMillis)
             {
-                if (_messageBuffer.TryReceiveAll(out var msgs))
+                /*if (_messageBuffer.TryReceiveAll(out var msgs))
                 {
                     return MiscHelpers.Combine(msgs);
-                }
+                }*/
                 try
                 {
                     return await _messageBuffer.ReceiveAsync(
