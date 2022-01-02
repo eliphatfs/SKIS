@@ -183,7 +183,7 @@ You will need to set a password in TTTY_PASS environment variable before running
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=DESC)
-    parser.add_argument("--server", type=str, default="localhost:5000/webpipe/", help="SKIS web pipe base address.")
+    parser.add_argument("--server", type=str, default="central.skis.flandre.info/webpipe/", help="SKIS web pipe base address.")
     parser.add_argument("--spawn", type=str, default="bash", help="The command to run on login.")
     parser.add_argument("--name", type=str, default='ttty' + str(random.randint(0, 2 ** 24)), help="Friendly display name of this ttty.")
     parser.add_argument("--insecure", action="store_true", help="Do not use https/wss.")
