@@ -119,7 +119,7 @@ def protocol_encode(data, pswd):
 
 
 async def ttyd2skis(ttyd_pipe, skis_pipe, pswd):
-    while ttyd_pipe.close_code is None and skis_pipe.close_code is None:
+    while not (ttyd_pipe.closed or skis_pipe.closed):
         data = await ttyd_pipe.recv()
         if data[0] == b'0'[0]:
             data = data[1:]
@@ -130,7 +130,7 @@ async def ttyd2skis(ttyd_pipe, skis_pipe, pswd):
 
 
 async def skis2ttyd(ttyd_pipe, skis_pipe, pswd, first_msg=False):
-    while ttyd_pipe.close_code is None and skis_pipe.close_code is None:
+    while not (ttyd_pipe.closed or skis_pipe.closed):
         data = await skis_pipe.recv()
         cmd = protocol_decode(data, pswd)
         if cmd is None:
