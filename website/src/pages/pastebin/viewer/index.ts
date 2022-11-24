@@ -39,4 +39,10 @@ page('/pastebin/:key', (ctx) => {
             );
         }
     );
+
+    $("#btn-copy").on("click", false);
+    $("#btn-copy").on("click", async () => {
+        await navigator.clipboard.writeText($("#content-slot").text());
+        alert("Copied to clipboard");
+    });
 });
